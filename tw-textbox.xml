@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>Textbox option (option quantity)</id>
+	<version>1.0.0</version>
+	<vqmver required="true">2.6.0</vqmver>
+	<author>tw</author>
+	<file name="admin/view/template/catalog/option_form.tpl">
+		<operation error="log">
+			<search position="after" offset="2" ><![CDATA[ 
+<option value="datetime"><?php echo $text_datetime; ?></option>
+			]]></search>
+			<add><![CDATA[ 
+                <optgroup label="Custom">
+                <?php if ($type == 'textbox') { ?>
+						 <option value="textbox" selected="selected">Quantity Text</option>
+                <?php } else { ?>
+						 <option value="textbox">Quantity Text</option>
+                <?php } ?>
+                 </optgroup>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="iafter"><![CDATA[ 
+	if (this.value == 'select' || this.value == 'radio' || this.value == 'checkbox' || this.value == 'image' 
+			]]></search>
+			<add><![CDATA[|| this.value == 'textbox']]></add>
+		</operation>
+	</file>
+
+	<file name="admin/controller/catalog/option.php">
+		<operation error="log">
+			<search position="iafter"><![CDATA[ 
+				if ($option['type'] == 'select' || $option['type'] == 'radio' || $option['type'] == 'checkbox' || $option['type'] == 'image' ]]></search>
+			<add><![CDATA[|| $option['type'] == 'textbox']]></add>
+		</operation>
+	</file>
+
+	<file name="admin/view/template/catalog/product_form.tpl">
+		<operation error="log">
+			<search position="iafter"><![CDATA[ 
+		if (item['type'] == 'select' || item['type'] == 'radio' || item['type'] == 'checkbox' || item['type'] == 'image'
+			]]></search>
+			<add><![CDATA[ || item['type'] == 'textbox']]></add>
+		</operation>
+		<operation error="log">
+			<search position="iafter"><![CDATA[ 
+                      <?php if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image'
+			]]></search>
+			<add><![CDATA[ || $product_option['type'] == 'textbox' ]]></add>
+		</operation>
+	</file>
+	<file name="admin/model/catalog/product.php">
+		<operation error="log">
+			<search position="iafter"><![CDATA[ 
+				if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image'
+			]]></search>
+			<add><![CDATA[ || $product_option['type'] == 'textbox']]></add>
+		</operation>
+	</file>
+	<file name="admin/controller/catalog/product.php">
+		<operation error="log">
+			<search position="iafter"><![CDATA[ 
+			if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image'
+			]]></search>
+			<add><![CDATA[ || $product_option['type'] == 'textbox' ]]></add>
+		</operation>
+	</file>
+
+	<!-- Frontend -->
+<!-- START Default theme support -->
+	<file name="catalog/view/theme/default/template/product/product.tpl">
+		<operation info="Support for textbox option">
+			<search position="before" >
+				<![CDATA[  <?php if ($option['type'] == 'checkbox') { ?> ]]>
+			</search>
+			<add>
+				<![CDATA[
+<?php // tw-textbox.xml - Support for textbox option ?>
+		<?php if ($option['type'] == 'textbox') { 
+			  if($has_related_options){ ?>
+			<div class="option form-group<?php echo ($option['required'] ? ' required' : ''); ?> option-<?php echo $option['type']; ?>" <?php echo 'master-option="' . $option['master_option'] . '"' . ' option="' . $option['option_id'] . '"'; ?> id="option-<?php echo $option['product_option_id']; ?>">
+              <label class="control-label"><?php echo $option['name']; ?></label>
+              <div id="input-option<?php echo $option['product_option_id']; ?>">
+                <?php foreach ($option['product_option_value'] as $option_value) { ?>
+                <div class="textbox">
+					 <div class="textbox-check">
+						<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
+						  <?php if (version_compare(VERSION, '2.2', '>=') && $option_value['image']) { ?>
+						  <img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+						  <?php } ?>
+						  <?php echo $option_value['name']; ?>
+						  <?php if ($option_value['price']) { ?>
+						  <span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
+						  <?php } ?>
+						</label>
+					</div>
+
+					<div class="input-group textbox-quantity">
+						<span class="input-group-btn">
+							<button class="btn btn-default qnt-stepper qnt-down" type="button" data-target="#qnt-<?= $option_value['option_value_id'];?>">-</button>
+						</span>
+						<input type="text" id="qnt-<?= $option_value['option_value_id'];?>" class="quantity-text form-control"  name="option[<?= $option['product_option_id']; ?>][<?= $option_value['product_option_value_id']; ?>][quantity]" value="0"  <?= 'master-option-value="' . $option_value['master_option_value'] . '"' . ' option-value="' . $option_value['option_value_id'] . '"'; ?> <?php echo ($related_options['show_disabled'] == 0 and isset($option_value['quantity']) and $option_value['quantity'] <= 0) ? 'disabled' : ''; ?> />
+						<span class="input-group-btn">
+							<button class="btn btn-default qnt-stepper qnt-up" type="button" data-target="#qnt-<?= $option_value['option_value_id'];?>">+</button>
+						</span>
+					</div><!-- /input-group -->
+                </div>
+                <?php } ?>
+              </div>
+            </div>
+			<?php } else { ?>
+            <div class="option form-group<?php echo ($option['required'] ? ' required' : ''); ?> option-<?php echo $option['type']; ?>">
+              <label class="control-label"><?php echo $option['name']; ?></label>
+              <div id="input-option<?php echo $option['product_option_id']; ?>">
+                <?php foreach ($option['product_option_value'] as $option_value) { ?>
+                <div class="textbox">
+					 <div class="textbox-check">
+						<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
+						  <?php if (version_compare(VERSION, '2.2', '>=') && $option_value['image']) { ?>
+						  <img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+						  <?php } ?>
+						  <?php echo $option_value['name']; ?>
+						  <?php if ($option_value['price']) { ?>
+						  <span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
+						  <?php } ?>
+						</label>
+					</div>
+
+					<div class="input-group textbox-quantity">
+						<span class="input-group-btn">
+							<button class="btn btn-default qnt-stepper qnt-down" type="button" data-target="#qnt-<?= $option_value['option_value_id'];?>">-</button>
+						</span>
+						<input type="text" id="qnt-<?= $option_value['option_value_id'];?>" class="quantity-text form-control"  name="option[<?= $option['product_option_id']; ?>][<?= $option_value['product_option_value_id']; ?>][quantity]" value="0"  <?php echo (isset($option_value['quantity']) and $option_value['quantity'] <= 0) ? 'disabled' : ''; ?> />
+						<span class="input-group-btn">
+							<button class="btn btn-default qnt-stepper qnt-up" type="button" data-target="#qnt-<?= $option_value['option_value_id'];?>">+</button>
+						</span>
+					</div><!-- /input-group -->
+                </div>
+                <?php } ?>
+              </div>
+            </div>
+            <?php }
+			} ?>
+<?php // tw-textbox.xml - Support for textbox option END ?>
+				]]>
+			</add>
+		</operation>
+	</file>
+
+<file name="catalog/view/theme/default/template/common/footer.tpl">
+		<operation info="Javascript and some styling (optional)">
+			<search position="after" >
+				<![CDATA[ </footer> ]]>
+			</search>
+			<add>
+				<![CDATA[
+<?php //tw-textbox.xml - Javascript and some styling (optional) ?>
+			<script><!--
+				$('.qnt-up').click(function(){
+					let target = $($(this).data('target'));
+					let prev = parseInt(target.val(),10);
+					if(prev >= 0) target.val(++prev);
+					else target.val(1);
+				});
+				$('.qnt-down').click(function(){
+					let target = $($(this).data('target'));
+					let prev = parseInt(target.val(),10);
+					if(prev > 1) target.val(--prev);
+					else target.val('');
+				});
+			
+				//--></script>
+<style>
+	.textbox-quantity {
+
+	}
+	a.qnt-stepper {
+
+	}
+	a.qnt-up{
+	}
+	a.qnt-down{
+	}
+	input.quantity-text{
+
+	}
+	.textbox-check{
+	}
+	.textbox {
+
+	 }
+</style>
+<?php //tw-textbox.xml - Javascript and some styling (optional) END ?>
+				]]>
+			</add>
+		</operation>
+	</file>
+
+
+<!-- END Default theme support -->
+
+
+<!-- Journal 2 Support -->
+	<file name="catalog/view/theme/journal2/template/product/product.tpl">
+		<operation error="log">
+			<search position="before"><![CDATA[ <?php if ($option['type'] == 'checkbox') { ?> ]]></search>
+		<add><![CDATA[
+        <?php if ($option['type'] == 'textbox') { 
+			  if($has_related_options){ ?>
+				<div class="option form-group<?php echo ($option['required'] ? ' required' : ''); ?> option-<?php echo $option['type']; ?>" <?php echo 'master-option="' . $option['master_option'] . '"' . ' option="' . $option['option_id'] . '"'; ?> id="option-<?php echo $option['product_option_id']; ?>">
+					<label class="control-label"><?php echo $option['name']; ?></label>
+						<div id="input-option<?php echo $option['product_option_id']; ?>">
+							<?php foreach ($option['product_option_value'] as $option_value) { ?>
+							<div class="textbox">
+								<div class="textbox-check">
+									<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
+										<?php if (version_compare(VERSION, '2.2', '>=') && $option_value['image']) { ?>
+											<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+										<?php } ?>
+										<?php echo $option_value['name']; ?>
+										<?php if ($option_value['price']) { ?>
+											<span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
+										<?php } ?>
+									</label>
+								</div>
+								<div class="textbox-quantity" >
+									<a href="javascript:;" data-target="#qnt-<?= $option_value['option_value_id'];?>" class="button qnt-stepper qnt-down">-</a>
+									<input type="text" id="qnt-<?= $option_value['option_value_id'];?>" class="quantity-text" style="min-width:15px;" name="option[<?= $option['product_option_id']; ?>][<?= $option_value['product_option_value_id']; ?>][quantity]" value="0"  <?= 'master-option-value="' . $option_value['master_option_value'] . '"' . ' option-value="' . $option_value['option_value_id'] . '"'; ?> <?php echo ($related_options['show_disabled'] == 0 and isset($option_value['quantity']) and $option_value['quantity'] <= 0) ? 'disabled' : ''; ?> />
+									<a href="javascript:;" data-target="#qnt-<?= $option_value['option_value_id'];?>" class="button qnt-stepper qnt-up">+</a>
+								</div>
+							</div>
+						<?php } ?>
+					</div>
+				</div>
+			<?php } else { ?>
+				<div class="option form-group<?php echo ($option['required'] ? ' required' : ''); ?> option-<?php echo $option['type']; ?>" id="option-<?php echo $option['product_option_id']; ?>">
+					<label class="control-label"><?php echo $option['name']; ?></label>
+						<div id="input-option<?php echo $option['product_option_id']; ?>">
+							<?php foreach ($option['product_option_value'] as $option_value) { ?>
+							<div class="textbox">
+								<div class="textbox-check">
+									<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
+										<?php if (version_compare(VERSION, '2.2', '>=') && $option_value['image']) { ?>
+											<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+										<?php } ?>
+										<?php echo $option_value['name']; ?>
+										<?php if ($option_value['price']) { ?>
+											<span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
+										<?php } ?>
+									</label>
+								</div>
+								<div class="textbox-quantity" >
+									<a href="javascript:;" data-target="#qnt-<?= $option_value['option_value_id'];?>" class="button qnt-stepper qnt-down">-</a>
+									<input type="text" id="qnt-<?= $option_value['option_value_id'];?>" class="quantity-text" style="min-width:15px;" name="option[<?= $option['product_option_id']; ?>][<?= $option_value['product_option_value_id']; ?>][quantity]" value="0"   <?php echo ( isset($option_value['quantity']) and $option_value['quantity'] <= 0) ? 'disabled' : ''; ?> />
+									<a href="javascript:;" data-target="#qnt-<?= $option_value['option_value_id'];?>" class="button qnt-stepper qnt-up">+</a>
+								</div>
+							</div>
+						<?php } ?>
+					</div>
+				</div>
+            <?php }
+			} ?>
+		]]></add>
+		</operation>
+	</file>
+
+	<file name="catalog/controller/journal2/ajax.php">
+		<operation error="log" info="Add 'textbox' support to Journal2 Price calculations">
+			<search position="iafter"><![CDATA[ 
+ array('select', 'radio', 'checkbox', 'image'
+			]]></search>
+		<add><![CDATA[,'textbox' ]]></add>
+		</operation>
+		<operation error="log" info="Add 'textbox' support to Journal2 Price calculations">
+			<search position="after"><![CDATA[ foreach (Journal2Utils::getProperty($option, Front::$IS_OC2 ? 'product_option_value' : 'option_value', array()) as $option_value) { ]]></search>
+			<add><![CDATA[ //Support for textbox
+			if(is_array($option_id)) {
+                       $qnt = (int)$option_id['quantity'];
+                       if($qnt > 0){
+                            if ($key == $option_value['product_option_value_id']) {
+                                $quantity = min($quantity, (int)$option_value['quantity']);
+                                if ($option_value['price_prefix'] === '+') {
+                                    $extra += $qnt * (float)$option_value['price'];
+                                } else {
+                                    $extra -= $qnt * (float)$option_value['price'];
+                                }
+                                if ($option_value['points_prefix'] === '+') {
+                                    $points += $qnt * (float)$option_value['points'];
+                                } else {
+                                    $points -= $qnt * (float)$option_value['points'];
+                                }
+                            }
+                       }
+                   }else ]]></add>
+		</operation>
+		<operation error="log" info="Add 'textbox' support to Journal2 Price calculations">
+			<search position="replace"><![CDATA[  foreach ($option_ids as $option_id) { ]]></search>
+			<add><![CDATA[ foreach ($option_ids as $key=>$option_id) {]]></add>
+		</operation>
+	</file>
+
+	<file name="catalog/controller/journal2/ajax.php">
+		<operation error="log" info="Journal2 Price calculation">
+			<search position="replace"><![CDATA[ array('select', 'radio', 'checkbox', 'image') ]]></search>
+			<add><![CDATA[ array('select', 'radio', 'checkbox', 'image', 'textbox') ]]></add>
+		</operation>
+	</file>
+
+<!-- START Javascript and styling (optional) for journal 2  -->
+	<file name="catalog/view/theme/journal2/template/common/footer.tpl">
+		<operation info="Javascript and some styling (optional)">
+			<search position="after" >
+				<![CDATA[ </footer> ]]>
+			</search>
+			<add>
+				<![CDATA[
+<?php //tw-textbox.xml - Javascript and some styling (optional) ?>
+			<script><!--
+				$('.qnt-up').click(function(){
+					let target = $($(this).data('target'));
+					let prev = parseInt(target.val(),10);
+					if(prev >= 0)
+						target.val(++prev);
+					else target.val(1);
+					Journal.updateProductPrice();
+				});
+				$('.qnt-down').click(function(){
+					let target = $($(this).data('target'));
+					let prev = parseInt(target.val(),10);
+					if(prev > 0){
+						target.val(--prev);
+						Journal.updateProductPrice();
+						}
+					else target.val(0);
+				});
+				// Journa2 Support ?
+				$('.quantity-text').change(function(){
+					Journal.updateProductPrice();
+				});
+			
+				//--></script>
+<style>
+	.textbox-quantity {
+		 width: auto;
+		 display: flex;
+	}
+	a.qnt-stepper {
+		 font-weight: 800;
+		 font-size: larger;
+		 vertical-align: middle;
+	}
+	a.qnt-up{
+		 border-radius:0 20px 20px 0;
+	}
+	a.qnt-down{
+		 border-radius:20px 0 0 20px;
+	}
+	input.quantity-text{
+		width:auto;
+		margin: 0 -4px;
+		max-width: 40px;
+	}
+	.textbox-check{
+		display:inline-block;
+	}
+	.textbox {
+		 margin: .5em 0;
+		 display: flex;
+		 align-items: center;
+		 justify-content: space-between;
+		 padding: 0 .5em;
+	 }
+</style>
+<?php //tw-textbox.xml - Javascript and some styling (optional) END ?>
+				]]>
+			</add>
+		</operation>
+	</file>
+<!-- END Javascript and styling (optional) -->
+<!--END Journal 2 template support -->
+	<file name="catalog/controller/product/product.php">
+		<operation error="log" info="Related options support">
+			<search position="after"><![CDATA[ 
+		foreach ($this->model_catalog_product->getProductOptions($this->request->get['product_id']) as $option) {
+			]]></search>
+		<add><![CDATA[
+			if($this->config->get('related_options')){
+					if ($option['type'] == 'textbox'){
+						$product_option_value_data = array();
+						$related_options = $this->config->get('related_options');
+						if (isset($related_options['residue_on']) && $related_options['residue_on']) {
+							foreach ($option['product_option_value'] as $option_value) {
+								if ((($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) && (float)$option_value['price']) {
+									$price = $this->currency->format($this->tax->calculate($option_value['price'], $product_info['tax_class_id'], $this->config->get('config_tax') ? 'P' : false), $this->session->data['currency']);
+								} else {
+									$price = false;
+								}
+
+								$product_option_value_data[] = array(
+									'product_option_value_id' => $option_value['product_option_value_id'],
+									'option_value_id'         => $option_value['option_value_id'],
+									'name'                    => $option_value['name'],
+									'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
+									'price'                   => $price,
+									'master_option_value'     => $option_value['master_option_value'],
+									'quantity'     			  => $option_value['quantity'],
+									'price_prefix'            => $option_value['price_prefix']
+								);
+							}
+						} else {
+						foreach ($option['product_option_value'] as $option_value) {
+							if (!$option_value['subtract'] || ($option_value['quantity'] > 0)) {
+								if ((($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) && (float)$option_value['price']) {
+									$price = $this->currency->format($this->tax->calculate($option_value['price'], $product_info['tax_class_id'], $this->config->get('config_tax') ? 'P' : false), $this->session->data['currency']);
+								} else {
+									$price = false;
+								}
+
+								$product_option_value_data[] = array(
+									'product_option_value_id' => $option_value['product_option_value_id'],
+									'option_value_id'         => $option_value['option_value_id'],
+									'name'                    => $option_value['name'],
+									'image'                   => strpos($this->config->get('config_template'), 'journal2') === 0 && $option_value['image'] && is_file(DIR_IMAGE . $option_value['image']) ? Journal2Utils::resizeImage($this->model_tool_image, $option_value['image'], $this->journal2->settings->get('product_page_options_push_image_width', 30), $this->journal2->settings->get('product_page_options_push_image_height', 30), 'crop') : $this->model_tool_image->resize($option_value['image'], 50, 50),
+									'price'                   => $price,
+									'master_option_value'     => $option_value['master_option_value'],
+									'price_prefix'            => $option_value['price_prefix']
+								);
+							}
+						}
+					}
+						$data['options'][] = array(
+							'product_option_id'    => $option['product_option_id'],
+							'product_option_value' => $product_option_value_data,
+							'option_id'            => $option['option_id'],
+							'name'                 => $option['name'],
+							'type'                 => $option['type'],
+							'value'                => $option['value'],
+							'master_option'        => $option['master_option'],
+							'required'             => $option['required']
+						);
+					} 
+				}
+			
+			
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="before"><![CDATA[ $data['options'] = array(); ]]></search>
+			<add><![CDATA[ $data['has_related_options'] = !is_null($this->config->get('related_options')); ]]></add>
+		</operation>
+	</file>
+
+
+	<file name="catalog/model/catalog/product.php">
+		<operation error="log" info="Related Options Support">
+			<search position="before"><![CDATA[ 
+if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
+			]]></search>
+			<add><![CDATA[ 
+				if ($product_option['type'] == 'textbox') {
+					$product_option_value_data = array();
+
+					$product_option_value_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_option_value pov LEFT JOIN " . DB_PREFIX . "option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN " . DB_PREFIX . "option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_id = '" . (int)$product_id . "' AND pov.product_option_id = '" . (int)$product_option['product_option_id'] . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY ov.sort_order");
+
+					foreach ($product_option_value_query->rows as $product_option_value) {
+						$product_option_value_data[] = array(
+							'product_option_value_id' => $product_option_value['product_option_value_id'],
+							'option_value_id'         => $product_option_value['option_value_id'],
+							'name'                    => $product_option_value['name'],
+							'image'                   => $product_option_value['image'],
+							'quantity'                => $product_option_value['quantity'],
+							'subtract'                => $product_option_value['subtract'],
+							'price'                   => $product_option_value['price'],
+							'price_prefix'            => $product_option_value['price_prefix'],
+							'weight'                  => $product_option_value['weight'],
+							'master_option_value'     => $product_option_value['master_option_value'],
+							'weight_prefix'           => $product_option_value['weight_prefix']
+						);
+					}
+
+					$product_option_data[] = array(
+						'product_option_id'    => $product_option['product_option_id'],
+						'product_option_value' => $product_option_value_data,
+						'option_id'            => $product_option['option_id'],
+						'name'                 => $product_option['name'],
+						'type'                 => $product_option['type'],
+						'value'                => $product_option['value'],
+						'master_option'        => $product_option['master_option'],
+						'required'             => $product_option['required']
+					);
+				} else 
+			]]></add>
+		</operation>
+	</file>
+
+	<file name="system/library/cart/cart.php">
+		<operation error="log" info="Add 'textbox' support to cart">
+			<search position="before"><![CDATA[ $option_query->row['type'] == 'checkbox' ]]></search>
+			<add><![CDATA[ //support for textbox
+						} elseif ($option_query->row['type'] == 'textbox') {
+							$value = json_decode(json_encode($value),true);
+								foreach ($value as $product_option_value_id => $data) {
+									$qnt = (int)$data['quantity'];
+									if($qnt > 0){
+										$option_value_query = $this->db->query("SELECT pov.option_value_id, ovd.name, pov.quantity, pov.subtract, pov.price, pov.price_prefix, pov.points, pov.points_prefix, pov.weight, pov.weight_prefix FROM " . DB_PREFIX . "product_option_value pov LEFT JOIN " . DB_PREFIX . "option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN " . DB_PREFIX . "option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_option_value_id = '" . (int)$product_option_value_id . "' AND pov.product_option_id = '" . (int)$product_option_id . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
+										$qnt = (int)$qnt;
+										if ($option_value_query->num_rows) {
+											if ($option_value_query->row['price_prefix'] == '+') {
+												$option_price += $qnt*$option_value_query->row['price'];
+											} elseif ($option_value_query->row['price_prefix'] == '-') {
+												$option_price -= $qnt*$option_value_query->row['price'];
+											}
+
+											if ($option_value_query->row['points_prefix'] == '+') {
+												$option_points += $qnt*$option_value_query->row['points'];
+											} elseif ($option_value_query->row['points_prefix'] == '-') {
+												$option_points -=$qnt* $option_value_query->row['points'];
+											}
+
+											if ($option_value_query->row['weight_prefix'] == '+') {
+												$option_weight += $qnt*$option_value_query->row['weight'];
+											} elseif ($option_value_query->row['weight_prefix'] == '-') {
+												$option_weight -= $qnt*$option_value_query->row['weight'];
+											}
+
+											if ($option_value_query->row['subtract'] && (!$option_value_query->row['quantity'] || ($option_value_query->row['quantity'] < $qnt * $cart['quantity']))) {
+												$stock = false;
+											}
+
+											$option_data[] = array(
+												'product_option_id'       => $product_option_id,
+												'product_option_value_id' => $product_option_value_id,
+												'option_id'               => $option_query->row['option_id'],
+												'option_value_id'         => $option_value_query->row['option_value_id'],
+												'name'                    => $qnt.' x '.$option_query->row['name'],
+												'value'                   => $option_value_query->row['name'],
+												'type'                    => $option_query->row['type'],
+												'quantity'                => $option_value_query->row['quantity'],
+												'subtract'                => $option_value_query->row['subtract'],
+												'price'                   => $qnt*$option_value_query->row['price'],
+												'price_prefix'            => $option_value_query->row['price_prefix'],
+												'points'                  => $qnt*$option_value_query->row['points'],
+												'points_prefix'           => $option_value_query->row['points_prefix'],
+												'weight'                  => $qnt*$option_value_query->row['weight'],
+												'weight_prefix'           => $option_value_query->row['weight_prefix']
+											);
+										}
+									}
+						} //textbox support end
+			]]></add>
+		</operation>
+	</file>
+
+<!-- START Validate textbox option when adding to cart -->
+		<file name="/srv/users/serverpilot/apps/0web/public/oc/2302/catalog/controller/checkout/cart.php">
+			<operation info="Validate textbox option">
+				<search position="before" >
+					<![CDATA[foreach ($product_options as $product_option) { ]]>
+				</search>
+				<add>
+					<![CDATA[
+			//tw-textbox.xml - Unset all options that are required but have 0 quantity given
+			foreach ($product_options as $product_option) {
+				if($product_option['type'] == 'textbox'){
+					foreach($option[$product_option['product_option_id']] as $option_value_id => $option_value){
+						if((int)$option_value['quantity'] <= 0){ //Unset all option values that are with zero or negative quantity
+							unset($option[$product_option['product_option_id']][$option_value_id]);
+						}
+					}
+				}
+			}
+			//tw-textbox.xml - Unset all options that are required but have 0 quantity given END
+					]]>
+				</add>
+			</operation>
+		</file>
+<!-- END Validate textbox option when adding to cart -->
+
+</modification>
