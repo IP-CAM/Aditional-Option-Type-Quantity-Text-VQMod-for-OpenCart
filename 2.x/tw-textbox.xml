@@ -85,7 +85,9 @@
                 <div class="textbox">
 					 <div class="textbox-check">
 						<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
-						  <img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+						  <?php if ($option_value['image']) { ?>
+						  	<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+						  <?php } ?>
 						  <?php echo $option_value['name']; ?>
 						  <?php if ($option_value['price']) { ?>
 						  <span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
@@ -114,7 +116,9 @@
                 <div class="textbox">
 					 <div class="textbox-check">
 						<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
-						  <img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+						  <?php if ($option_value['image']) { ?>
+						  	<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+						  <?php } ?>
 						  <?php echo $option_value['name']; ?>
 						  <?php if ($option_value['price']) { ?>
 						  <span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
@@ -210,7 +214,9 @@
 							<div class="textbox">
 								<div class="textbox-check">
 									<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
-										<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+										<?php if ($option_value['image']) { ?>
+											<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+										<?php } ?>
 										<?php echo $option_value['name']; ?>
 										<?php if ($option_value['price']) { ?>
 											<span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
@@ -234,7 +240,9 @@
 							<div class="textbox">
 								<div class="textbox-check">
 									<label for="option-value-<?php echo $option_value['product_option_value_id']; ?>">
-										<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+										<?php if ($option_value['image']) { ?>
+											<img src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" /> 
+										<?php } ?>
 										<?php echo $option_value['name']; ?>
 										<?php if ($option_value['price']) { ?>
 											<span>(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)</span>
