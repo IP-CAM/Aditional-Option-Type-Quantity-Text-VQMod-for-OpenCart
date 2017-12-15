@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <modification>
 	<id>Textbox option (option quantity)</id>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<vqmver required="true">2.6.0</vqmver>
 	<author>tw</author>
 	<file name="admin/view/template/catalog/option_form.tpl">
@@ -552,7 +552,7 @@ if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' ||
 	</file>
 
 <!-- START Validate textbox option when adding to cart -->
-		<file name="/srv/users/serverpilot/apps/0web/public/oc/2302/catalog/controller/checkout/cart.php">
+		<file name="catalog/controller/checkout/cart.php">
 			<operation info="Validate textbox option">
 				<search position="before" >
 					<![CDATA[foreach ($product_options as $product_option) { ]]>
